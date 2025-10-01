@@ -99,19 +99,26 @@ def main():
 		# start CDA
 		cda.startApp()
 
-		# check if CDA should run forever
-		runForever = configUtil.getBoolean(ConfigConst.CONSTRAINED_DEVICE, ConfigConst.RUN_FOREVER_KEY)
+		sleep(65)
 
-		if runForever:
-			# sleep ~5 seconds every loop
-			while (True):
-				sleep(5)
+		# stop CDA
+		cda.stopApp(0)		
+
+		# check if CDA should run forever
+		# runForever = configUtil.getBoolean(ConfigConst.CONSTRAINED_DEVICE, ConfigConst.RUN_FOREVER_KEY)
+
+		# if runForever:
+		# 	# sleep ~5 seconds every loop
+		# 	while (True):
+		# 		sleep(5)
+		# 		print('CDA running forever...')
 			
-		else:
-			# run CDA for ~65 seconds then exit
-			if (cda.isAppStarted()):
-				sleep(65)
-				cda.stopApp(0)
+		# else:
+		# 	# run CDA for ~65 seconds then exit
+		# 	if (cda.isAppStarted()):
+		# 		sleep(65)
+		# 		cda.stopApp(0)
+		# 		print('CDA stopped...')
 			
 	except KeyboardInterrupt:
 		logging.warning('Keyboard interruption for CDA. Exiting.')
