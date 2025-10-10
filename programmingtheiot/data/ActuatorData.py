@@ -62,4 +62,22 @@ class ActuatorData(BaseIotData):
 			self.stateData = data.getStateData()
 			self.value = data.getValue()
 			self.isResponse = data.isResponseFlagEnabled()
+	
+	def __str__(self):
+		"""
+		Returns a string representation of this instance.
+		
+		@return The string representing this instance, returned in CSV 'key=value' format.
+		"""
+		return '{}={},{}={},{}={},{}={},{}={},{}={},{}={},{}={},{}={},{}={}'.format(
+			ConfigConst.NAME_PROP, self.name,
+			ConfigConst.TYPE_ID_PROP, self.typeID,
+			ConfigConst.TIMESTAMP_PROP, self.timeStamp,
+			ConfigConst.STATUS_CODE_PROP, self.statusCode,
+			ConfigConst.HAS_ERROR_PROP, self.hasError,
+			ConfigConst.LOCATION_ID_PROP, self.locationID,
+			ConfigConst.ELEVATION_PROP, self.elevation,
+			ConfigConst.LATITUDE_PROP, self.latitude,
+			ConfigConst.LONGITUDE_PROP, self.longitude,
+			ConfigConst.VALUE_PROP, self.value)
 		

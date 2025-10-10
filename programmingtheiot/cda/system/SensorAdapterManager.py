@@ -103,6 +103,19 @@ class SensorAdapterManager(object):
 			self.pressureAdapter = PressureSensorSimTask(dataSet = pressureData)
 			self.tempAdapter     = TemperatureSensorSimTask(dataSet = tempData)
 
+		else:
+			heModule = import_module('programmingtheiot.cda.emulated.HumiditySensorEmulatorTask', 'HumiditySensorEmulatorTask')
+			heClazz = getattr(heModule, 'HumiditySensorEmulatorTask')
+			self.humidityAdapter = heClazz()
+			
+			peModule = import_module('programmingtheiot.cda.emulated.PressureSensorEmulatorTask', 'PressureSensorEmulatorTask')
+			peClazz = getattr(peModule, 'PressureSensorEmulatorTask')
+			self.pressureAdapter = peClazz()
+			
+			teModule = import_module('programmingtheiot.cda.emulated.TemperatureSensorEmulatorTask', 'TemperatureSensorEmulatorTask')
+			teClazz = getattr(teModule, 'TemperatureSensorEmulatorTask')
+			self.tempAdapter = teClazz()
+
 	def handleTelemetry(self):
 		humidityData = self.humidityAdapter.generateTelemetry()
 		pressureData = self.pressureAdapter.generateTelemetry()
@@ -112,9 +125,9 @@ class SensorAdapterManager(object):
 		pressureData.setLocationID(self.locationID)
 		tempData.setLocationID(self.locationID)
 		
-		logging.debug('Generated humidity data: ' + str(humidityData))
-		logging.debug('Generated pressure data: ' + str(pressureData))
-		logging.debug('Generated temp data: ' + str(tempData))
+		logging.debug('Generated humidity data: ' + str(humidityData.getValue()))
+		logging.debug('Generated pressure data: ' + str(pressureData.getValue()))
+		logging.debug('Generated temp data: ' + str(tempData.getValue()))
 		
 		if self.dataMsgListener:
 			self.dataMsgListener.handleSensorMessage(humidityData)
