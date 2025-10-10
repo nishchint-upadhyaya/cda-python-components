@@ -125,9 +125,9 @@ class SensorAdapterManager(object):
 		pressureData.setLocationID(self.locationID)
 		tempData.setLocationID(self.locationID)
 		
-		logging.debug('Generated humidity data: ' + str(humidityData))
-		logging.debug('Generated pressure data: ' + str(pressureData))
-		logging.debug('Generated temp data: ' + str(tempData))
+		logging.debug('Generated humidity data: ' + str(humidityData.getValue()))
+		logging.debug('Generated pressure data: ' + str(pressureData.getValue()))
+		logging.debug('Generated temp data: ' + str(tempData.getValue()))
 		
 		if self.dataMsgListener:
 			self.dataMsgListener.handleSensorMessage(humidityData)
