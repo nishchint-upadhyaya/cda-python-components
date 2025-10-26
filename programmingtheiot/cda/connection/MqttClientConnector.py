@@ -75,11 +75,13 @@ class MqttClientConnector(IPubSubClient):
 
 		if not clientID:
 			# TODO: The following is an example; use your own unique ID
-			clientID = 'CDAMqttClientID001'
+			self.clientID = 'CDAMqttClientID001'
+		else:
+		    self.clientID = clientID
 			
-		self.clientID = \
-			self.config.getProperty( \
-				ConfigConst.CONSTRAINED_DEVICE, ConfigConst.DEVICE_LOCATION_ID_KEY, clientID)
+		# self.clientID = \
+		# 	self.config.getProperty( \
+		# 		ConfigConst.CONSTRAINED_DEVICE, ConfigConst.DEVICE_LOCATION_ID_KEY, clientID)
 		
 		# TODO: be sure to validate the clientID!
 			
@@ -205,9 +207,9 @@ class MqttClientConnector(IPubSubClient):
 		
 		return True
 
-	def setDataMessageListener(self, listener: IDataMessageListener = None) -> bool:
+	def setDataMessageListener(self, listener: IDataMessageListener = None):
 		if listener:
 			self.dataMsgListener = listener
 
-		logging.info("setDataMessageListener() called with listener: %s", listener)
-		return False
+		# logging.info("setDataMessageListener() called with listener: %s", listener)
+		# return False

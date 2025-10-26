@@ -37,7 +37,8 @@ class MqttClientConnectorTest(unittest.TestCase):
 		logging.info("Testing MqttClientConnector class...")
 		
 		self.cfg = ConfigUtil()
-		self.mcc = MqttClientConnector()
+		# self.mcc = MqttClientConnector()
+		self.mcc = MqttClientConnector(clientID = "testClient")
 		
 	def setUp(self):
 		pass
