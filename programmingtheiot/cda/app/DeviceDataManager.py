@@ -57,6 +57,10 @@ class DeviceDataManager(IDataMessageListener):
 		self.enableCoapServer = \
 			self.configUtil.getBoolean( \
 				section = ConfigConst.CONSTRAINED_DEVICE, key = ConfigConst.ENABLE_COAP_SERVER_KEY)
+
+		self.enableCoapClient = \
+			self.configUtil.getBoolean( \
+				section = ConfigConst.CONSTRAINED_DEVICE, key = ConfigConst.ENABLE_COAP_CLIENT_KEY)
 		
 		# NOTE: this can also be retrieved from the configuration file
 		self.enableActuation    = True
@@ -90,6 +94,9 @@ class DeviceDataManager(IDataMessageListener):
 
 		if self.enableCoapServer:
 			self.coapServer = CoapServerAdapter(dataMsgListener = self)
+
+		if self.enableCoapClient:
+			self.coapClient = CoapClientConnector(dataMsgListener = self)
 		
 		self.handleTempChangeOnDevice = \
 			self.configUtil.getBoolean( \
