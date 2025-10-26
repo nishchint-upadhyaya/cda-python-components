@@ -37,7 +37,8 @@ class MqttClientConnectorTest(unittest.TestCase):
 		logging.info("Testing MqttClientConnector class...")
 		
 		self.cfg = ConfigUtil()
-		self.mcc = MqttClientConnector()
+		# self.mcc = MqttClientConnector()
+		self.mcc = MqttClientConnector(clientID = "testClient")
 		
 	def setUp(self):
 		pass
@@ -95,7 +96,7 @@ class MqttClientConnectorTest(unittest.TestCase):
 		
 		self.mcc.disconnectClient()
 		
-	@unittest.skip("Ignore for now.")
+	# @unittest.skip("Ignore for now.")
 	def testActuatorCmdPubSub(self):
 		qos = 0
 		delay = self.cfg.getInteger(ConfigConst.MQTT_GATEWAY_SERVICE, ConfigConst.KEEP_ALIVE_KEY, ConfigConst.DEFAULT_KEEP_ALIVE)

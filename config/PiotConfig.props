@@ -50,6 +50,7 @@ pollCycleSecs    = 5
 testGdaDataPath  = /tmp/gda-data
 testCdaDataPath  = /tmp/cda-data
 testEmptyApp     = False
+runForever       = True
 
 # configurable limits for sensor simulation
 humiditySimFloor   =   35.0
