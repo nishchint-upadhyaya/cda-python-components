@@ -11,6 +11,7 @@
 # 
 
 import logging
+import traceback
 
 from threading import Thread
 from time import sleep
@@ -35,16 +36,65 @@ class CoapServerAdapter():
 	"""
 	
 	def __init__(self, dataMsgListener = None):
-		pass
+		self.config = ConfigUtil()
+		self.dataMsgListener = dataMsgListener
+		self.enableConfirmedMsgs = False
+		
+		self.host = self.config.getProperty(ConfigConst.COAP_GATEWAY_SERVICE, ConfigConst.HOST_KEY, ConfigConst.DEFAULT_HOST)
+		self.port = self.config.getInteger(ConfigConst.COAP_GATEWAY_SERVICE, ConfigConst.PORT_KEY, ConfigConst.DEFAULT_COAP_PORT)
+		self.serverUri = f"coap://{self.host}:{self.port}"
+
+		self.coapServer     = None
+		self.coapServerTask = None
+		
+		self.listenTimeout = 30
+		
+		self._initServer()
+		
+		logging.info(f"CoAP server configured for host and port: {self.serverUri}")
 		
 	def addResource(self, resourcePath: ResourceNameEnum = None, endName: str = None, resource = None):
 		pass
 				
 	def startServer(self):
-		pass
+		if self.coapServer:
+			logging.info("Starting CoAP server...")
+			
+			if self.coapServerTask and self.coapServerTask.isAlive():
+				self.stopServer()
+				self.coapServerTask= None
+				
+			self.coapServerTask = Thread(target = self._runServer)
+			self.coapServerTask.setDaemon(True)
+			self.coapServerTask.start()
+			
+			logging.info("\n\n***** CoAP server started. *****\n\n")
+		else:
+			logging.warning("CoAP server not yet initialized (shouldn't happen).")
 	
 	def stopServer(self):
-		pass
+		if self.coapServer:
+			logging.info("Stopping CoAP server...")
+			
+			self.coapServer.close()
+			self.coapServerTask.join(5)
+		else:
+			logging.warning("CoAP server not yet initialized (shouldn't happen).")
 	
 	def setDataMessageListener(self, listener: IDataMessageListener = None) -> bool:
+		if listener:
+			self.dataMsgListener = listener
+			return True
+		
+		return False
+	
+	def _initServer(self):
 		pass
+			
+	def _runServer(self):
+		try:
+			self.coapServer.listen(self.listenTimeout)
+
+		except Exception as e:
+			traceback.print_exception(type(e), e, e.__traceback__)
+			logging.warning("Failed to run server.")
