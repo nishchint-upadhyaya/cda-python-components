@@ -49,6 +49,9 @@ class CoapClientConnector(IRequestResponseClient):
 				
 		self.includeDebugLogDetail = True
 		
+		self.uriPath = f"coap://{self.host}:{self.port}/"
+		logging.info(f"CoAP client will connect to: {self.uriPath}")
+		
 		try:
 			tmpHost = socket.gethostbyname(self.host)
 			
@@ -62,17 +65,41 @@ class CoapClientConnector(IRequestResponseClient):
 			logging.error(f"Failed to resolve host: {self.host}")
 			raise
 
-		self.uriPath = f"coap://{self.host}:{self.port}/"
-		logging.info(f"CoAP client will connect to: {self.uriPath}")
+		# self.uriPath = f"coap://{self.host}:{self.port}/"
+		# logging.info(f"CoAP client will connect to: {self.uriPath}")
 	
 	def sendDiscoveryRequest(self, timeout: int = IRequestResponseClient.DEFAULT_TIMEOUT) -> bool:
-		pass
+		logging.info("Discovering remote resources...")
+		
+		resourcePath = self._createResourcePath(None, '.well-known/core')
+		
+		logging.info(f"Issuing DISCOVERY with path: {resourcePath}")
+		
+		request = self.coapClient.mk_request(defines.Codes.GET, path = resourcePath)
+		request.token = generate_random_token(2)
+		
+		self.coapClient.send_request(request = request, timeout = timeout, callback = self._onDiscoveryResponse)
 
 	def sendDeleteRequest(self, resource: ResourceNameEnum = None, name: str = None, enableCON: bool = False, timeout: int = IRequestResponseClient.DEFAULT_TIMEOUT) -> bool:
 		pass
 
 	def sendGetRequest(self, resource: ResourceNameEnum = None, name: str = None, enableCON: bool = False, timeout: int = IRequestResponseClient.DEFAULT_TIMEOUT) -> bool:
-		pass
+		if resource or name:
+			resourcePath = self._createResourcePath(resource, name)
+			
+			logging.info(f"Issuing an awesome GET with path: {resourcePath}")
+			
+			request = self.coapClient.mk_request(defines.Codes.GET, path = resourcePath)
+			request.token = generate_random_token(2)
+			
+			if not enableCON:
+				request.type = defines.Types["NON"]
+				
+			response = self.coapClient.send_request(request = request, timeout = timeout)
+			
+			self._onGetResponse(response = response, resourcePath = resourcePath)
+		else:
+			logging.warning("Can't test GET - no path or path list provided.")
 
 	def sendPostRequest(self, resource: ResourceNameEnum = None, name: str = None, enableCON: bool = False, payload: str = None, timeout: int = IRequestResponseClient.DEFAULT_TIMEOUT) -> bool:
 		pass
@@ -124,10 +151,42 @@ class CoapClientConnector(IRequestResponseClient):
 		pass
 
 	def _onDiscoveryResponse(self, response):
-		pass
+		if not response:
+			logging.warning("DISCOVERY response invalid. Ignoring.")
+			return
+		
+		logging.info(f"DISCOVERY response received: {response.payload}")
 	
 	def _onGetResponse(self, response, resourcePath: str = None):
-		pass
+		if not response:
+			logging.warning("GET response invalid. Ignoring.")
+			return
+		
+		logging.info("GET response received.")
+		
+		jsonData = response.payload
+		locationPath = resourcePath.split('/')
+		
+		if len(locationPath) > 2:
+			dataType = locationPath[2]
+			
+			if dataType == ConfigConst.ACTUATOR_CMD:
+				# TODO: convert payload to ActuatorData and verify!
+				logging.info(f"ActuatorData received: {jsonData}")
+				
+				try:
+					ad = DataUtil().jsonToActuatorData(jsonData)
+					
+					if self.dataMsgListener:
+						self.dataMsgListener.handleActuatorCommandMessage(ad)
+				except:
+					logging.warning(f"Failed to decode actuator data. Ignoring: {jsonData}")
+					return
+			else:
+				logging.info(f"Response data received. Payload: {jsonData}")
+				
+		else:
+			logging.info(f"Response data received. Payload: {jsonData}")
 	
 	def _onPostResponse(self, response):
 		pass
