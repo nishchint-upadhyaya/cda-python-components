@@ -102,7 +102,23 @@ class CoapClientConnector(IRequestResponseClient):
 			logging.warning("Can't test GET - no path or path list provided.")
 
 	def sendPostRequest(self, resource: ResourceNameEnum = None, name: str = None, enableCON: bool = False, payload: str = None, timeout: int = IRequestResponseClient.DEFAULT_TIMEOUT) -> bool:
-		pass
+		if resource or name:
+			resourcePath = self._createResourcePath(resource, name)
+			
+			logging.info(f"Issuing POST with path: {resourcePath}")
+			
+			request = self.coapClient.mk_request(defines.Codes.POST, path = resourcePath)
+			request.token = generate_random_token(2)
+			request.payload = payload
+			
+			if not enableCON:
+				request.type = defines.Types["NON"]
+			
+			logging.info(f"Sending POST with payload: {payload}")
+			
+			self.coapClient.send_request(request = request, callback = self._onPostResponse, timeout = timeout)
+		else:
+			logging.warning("Can't test POST - no path or path list provided.")
 
 	def sendPutRequest(self, resource: ResourceNameEnum = None, name: str = None, enableCON: bool = False, payload: str = None, timeout: int = IRequestResponseClient.DEFAULT_TIMEOUT) -> bool:
 		if resource or name:
@@ -203,7 +219,11 @@ class CoapClientConnector(IRequestResponseClient):
 			logging.info(f"Response data received. Payload: {jsonData}")
 	
 	def _onPostResponse(self, response):
-		pass
+		if not response:
+			logging.warning("POST response invalid. Ignoring.")
+			return
+		
+		logging.info(f"POST response received: {response.payload}")
 	
 	def _onPutResponse(self, response):
 		if not response:
