@@ -30,6 +30,36 @@ from programmingtheiot.cda.connection.IRequestResponseClient import IRequestResp
 
 from programmingtheiot.data.DataUtil import DataUtil
 
+class HandleActuatorEvent():
+	def __init__(self, \
+			listener: IDataMessageListener = None, \
+			resource: ResourceNameEnum = ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE, \
+			requests = None):
+		
+		self.listener = listener
+		self.resource = resource
+		self.observeRequests = requests
+		
+		if not self.resource:
+			self.resource = ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE
+			
+	def handleActuatorResponse(self, response):
+		if response:
+			jsonData = response.payload
+			
+			if self.observeRequests is not None:
+				self.observeRequests[self.resource] = response
+			
+			logging.info(f"Received actuator command response to resource {self.resource} -> {jsonData}")
+			
+			if self.listener:
+				try:
+					data = DataUtil().jsonToActuatorData(jsonData = jsonData)
+					self.listener.handleActuatorCommandMessage(data = data)
+
+				except:
+					logging.warning(f"Failed to decode actuator data. Ignoring: {jsonData}")
+
 class CoapClientConnector(IRequestResponseClient):
 	"""
 	Shell representation of class for student implementation.
@@ -158,10 +188,56 @@ class CoapClientConnector(IRequestResponseClient):
 		return False
 
 	def startObserver(self, resource: ResourceNameEnum = None, name: str = None, ttl: int = IRequestResponseClient.DEFAULT_TTL) -> bool:
-		pass
+		if resource or name:
+			if resource in self.observeRequests:
+				logging.warning(f"Already observing resource {resource}. Ignoring start observe request.")
+				return
+			
+			self.observeRequests[resource] = None
+			
+			resourcePath = self._createResourcePath(resource, name)
+			
+			observeActuatorCmdHandler = \
+				HandleActuatorEvent( \
+					listener = self.dataMsgListener, resource = resource, requests = self.observeRequests)
+			
+			try:
+				self.coapClient.observe(path = resourcePath, callback = observeActuatorCmdHandler.handleActuatorResponse)
+				
+			except Exception as e:
+				logging.warning(f"Failed to observe path: {resourcePath}")
 
 	def stopObserver(self, resource: ResourceNameEnum = None, name: str = None, timeout: int = IRequestResponseClient.DEFAULT_TIMEOUT) -> bool:
-		pass
+		if resource or name:
+			if not resource in self.observeRequests:
+				logging.warning(f"Resource {resource} not being observed. Ignoring stop observe request.")
+				return
+			
+			response = self.observeRequests[resource]
+			
+			if response:
+				logging.info(f"Cancelling observe for resource {resource}.")
+				
+				try:
+					self.coapClient.cancel_observing(response = response, send_rst = True)
+					
+					del self.observeRequests[resource]
+					
+					logging.info(f"Cancelled observe for resource {resource}.")
+
+				except Exception as e:
+					logging.warning(f"Failed to cancel observe for resource {resource}")
+					traceback.print_exception(type(e), e, e.__traceback__)
+			else:
+				logging.warning(f"No response yet for observed resource {resource}. Attempting to stop anyway.")
+				
+				try:
+					self.coapClient.cancel_observing(response = None, send_rst = True)
+					logging.info(f"Canceled observe for resource {resource}.")
+
+				except Exception as e:
+					logging.warning(f"Failed to cancel observe for resource {resource}.")
+					traceback.print_exception(type(e), e, e.__traceback__)
 	
 	def _initClient(self):
 		try:

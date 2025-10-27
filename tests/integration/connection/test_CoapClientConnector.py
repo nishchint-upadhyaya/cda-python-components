@@ -83,7 +83,7 @@ class CoapClientConnectorTest(unittest.TestCase):
 		self.coapClient.sendGetRequest( \
 			resource = ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE, enableCON = False, timeout = 5)
 		
-	# @unittest.skip("Ignore for now.")
+	@unittest.skip("Ignore for now.")
 	def testDeleteSensorMessageCon(self):
 		"""
 		Comment the annotation to test CON DELETE
@@ -91,7 +91,7 @@ class CoapClientConnectorTest(unittest.TestCase):
 		self.coapClient.sendDeleteRequest( \
 			resource = ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, enableCON = True, timeout = 5)
 	
-	# @unittest.skip("Ignore for now.")
+	@unittest.skip("Ignore for now.")
 	def testDeleteSensorMessageNon(self):
 		"""
 		Comment the annotation to test NON DELETE
@@ -143,13 +143,13 @@ class CoapClientConnectorTest(unittest.TestCase):
 		self.coapClient.sendPutRequest( \
 			resource = ResourceNameEnum.CDA_SENSOR_MSG_RESOURCE, enableCON = False, payload = jsonData, timeout = 5)
 
-	@unittest.skip("Ignore for now.")
+	# @unittest.skip("Ignore for now.")
 	def testActuatorCommandObserve(self):
 		"""
 		Comment the annotation to test Observe
 		"""
 		self._startObserver()
-		sleep(30)
+		sleep(20)
 		self._stopObserver()
 		
 	def _startObserver(self):
