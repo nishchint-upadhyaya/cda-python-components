@@ -50,30 +50,30 @@ class DeviceDataManager(IDataMessageListener):
 		self.configUtil = ConfigUtil()
 	
 		self.enableMqttClient = \
-			self.configUtil.getBoolean( \
-				section = ConfigConst.CONSTRAINED_DEVICE, key = ConfigConst.ENABLE_MQTT_CLIENT_KEY)
+			self.configUtil.getBoolean(\
+				section=ConfigConst.CONSTRAINED_DEVICE, key=ConfigConst.ENABLE_MQTT_CLIENT_KEY)
 		
 		logging.info(f"EnableMqttClient = {self.enableMqttClient}")
 		
-		self.enableSystemPerf   = \
-			self.configUtil.getBoolean( \
-				section = ConfigConst.CONSTRAINED_DEVICE, key = ConfigConst.ENABLE_SYSTEM_PERF_KEY)
+		self.enableSystemPerf = \
+			self.configUtil.getBoolean(\
+				section=ConfigConst.CONSTRAINED_DEVICE, key=ConfigConst.ENABLE_SYSTEM_PERF_KEY)
 			
-		self.enableSensing      = \
-			self.configUtil.getBoolean( \
-				section = ConfigConst.CONSTRAINED_DEVICE, key = ConfigConst.ENABLE_SENSING_KEY)
+		self.enableSensing = \
+			self.configUtil.getBoolean(\
+				section=ConfigConst.CONSTRAINED_DEVICE, key=ConfigConst.ENABLE_SENSING_KEY)
 		
 		# NOTE: this can also be retrieved from the configuration file
-		self.enableActuation    = True
+		self.enableActuation = True
 		
-		self.sysPerfMgr         = None
-		self.sensorAdapterMgr   = None
+		self.sysPerfMgr = None
+		self.sensorAdapterMgr = None
 		self.actuatorAdapterMgr = None
 		
 		# NOTE: The following aren't used until Part III but should be declared now
-		self.mqttClient         = None
-		self.coapClient         = None
-		self.coapServer         = None
+		self.mqttClient = None
+		self.coapClient = None
+		self.coapServer = None
 		
 		if self.enableSystemPerf:
 			self.sysPerfMgr = SystemPerformanceManager()
@@ -86,7 +86,7 @@ class DeviceDataManager(IDataMessageListener):
 			logging.info("Local sensor tracking enabled")
 			
 		if self.enableActuation:
-			self.actuatorAdapterMgr = ActuatorAdapterManager(dataMsgListener = self)
+			self.actuatorAdapterMgr = ActuatorAdapterManager(dataMsgListener=self)
 			logging.info("Local actuation capabilities enabled")
 			
 		# [CDA-06-004] Create MQTT client and set listener (if enabled)
@@ -98,39 +98,38 @@ class DeviceDataManager(IDataMessageListener):
 			self.mqttClient.setDataMessageListener(self)
 			logging.info("MQTT client initialized and listener set.")  # [CDA-06-004]
 		
-		
 		self.handleTempChangeOnDevice = \
-			self.configUtil.getBoolean( \
+			self.configUtil.getBoolean(\
 				ConfigConst.CONSTRAINED_DEVICE, ConfigConst.HANDLE_TEMP_CHANGE_ON_DEVICE_KEY)
 			
-		self.triggerHvacTempFloor     = \
-			self.configUtil.getFloat( \
+		self.triggerHvacTempFloor = \
+			self.configUtil.getFloat(\
 				ConfigConst.CONSTRAINED_DEVICE, ConfigConst.TRIGGER_HVAC_TEMP_FLOOR_KEY);
 				
-		self.triggerHvacTempCeiling   = \
-			self.configUtil.getFloat( \
+		self.triggerHvacTempCeiling = \
+			self.configUtil.getFloat(\
 				ConfigConst.CONSTRAINED_DEVICE, ConfigConst.TRIGGER_HVAC_TEMP_CEILING_KEY);
 				
 		self.enableCoapServer = \
-			self.configUtil.getBoolean( \
-				section = ConfigConst.CONSTRAINED_DEVICE, key = ConfigConst.ENABLE_COAP_SERVER_KEY)
+			self.configUtil.getBoolean(\
+				section=ConfigConst.CONSTRAINED_DEVICE, key=ConfigConst.ENABLE_COAP_SERVER_KEY)
 			
 		if self.enableCoapServer:
-			self.coapServer = CoapServerAdapter(dataMsgListener = self)
+			self.coapServer = CoapServerAdapter(dataMsgListener=self)
 		
 		self.enableCoapClient = \
-			self.configUtil.getBoolean( \
-				section = ConfigConst.CONSTRAINED_DEVICE, key = ConfigConst.ENABLE_COAP_CLIENT_KEY)
+			self.configUtil.getBoolean(\
+				section=ConfigConst.CONSTRAINED_DEVICE, key=ConfigConst.ENABLE_COAP_CLIENT_KEY)
 			
 		if self.enableCoapClient:
-			self.coapClient = CoapClientConnector(dataMsgListener = self)
+			self.coapClient = CoapClientConnector(dataMsgListener=self)
 		
 		self.enableCoapClient = \
-			self.configUtil.getBoolean( \
-				section = ConfigConst.CONSTRAINED_DEVICE, key = ConfigConst.ENABLE_COAP_CLIENT_KEY)
+			self.configUtil.getBoolean(\
+				section=ConfigConst.CONSTRAINED_DEVICE, key=ConfigConst.ENABLE_COAP_CLIENT_KEY)
 			
-		#if self.enableCoapClient:
-			#self.coapClient = AsyncCoapServerAdapter(dataMsgListener = self)
+		# if self.enableCoapClient:
+			# self.coapClient = AsyncCoapServerAdapter(dataMsgListener = self)
 		
 	def getLatestActuatorDataResponseFromCache(self, name: str = None) -> ActuatorData:
 		"""
@@ -171,14 +170,14 @@ class DeviceDataManager(IDataMessageListener):
 		pass
 	'''
 	
-	def handleActuatorCommandMessage(self, data: ActuatorData = None) -> ActuatorData:
-		logging.info("Actuator data: " + str(data))
-		
+	def handleActuatorCommandMessage(self, data: ActuatorData) -> ActuatorData:
 		if data:
 			logging.info("Processing actuator command message.")
+			
+			# TODO: add further validation before sending the command
 			return self.actuatorAdapterMgr.sendActuatorCommand(data)
 		else:
-			logging.warning("Incoming actuator command is invalid (null). Ignoring.")
+			logging.warning("Received invalid ActuatorData command message. Ignoring.")
 			return None
 	
 	'''
