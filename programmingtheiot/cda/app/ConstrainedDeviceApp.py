@@ -23,6 +23,7 @@ from programmingtheiot.common.ConfigUtil import ConfigUtil
 from programmingtheiot.cda.system.SystemPerformanceManager import SystemPerformanceManager
 from programmingtheiot.cda.app.DeviceDataManager import DeviceDataManager
 
+
 logging.basicConfig(format = '%(asctime)s:%(name)s:%(levelname)s:%(message)s', level = logging.DEBUG)
 
 class ConstrainedDeviceApp():
@@ -38,12 +39,12 @@ class ConstrainedDeviceApp():
 		@param path The name of the resource to apply to the URI.
 		"""
 		logging.info("Initializing CDA...")
-
-		# TODO: implementation here
-		# self.sysPerfMgr = SystemPerformanceManager()
+		
+		self.sysPerfMgr = SystemPerformanceManager()
 		self.dataMgr = DeviceDataManager()
 		
-		self.isStarted = False
+		#self.isStarted = False
+		self.isStarted = True
 
 	def isAppStarted(self) -> bool:
 		"""
@@ -57,9 +58,12 @@ class ConstrainedDeviceApp():
 		"""
 		logging.info("Starting CDA...")
 		
-		# TODO: implementation here
-		# self.sysPerfMgr.startManager()
+		# NOTE!! : LETS NOT HAVE IT START THESE FOR NOW AS WE ARE TESTING MQTT
+		'''
+		self.sysPerfMgr.startManager()
+		'''
 		self.dataMgr.startManager()
+		
 		
 		logging.info("CDA started.")
 
@@ -70,8 +74,7 @@ class ConstrainedDeviceApp():
 		"""
 		logging.info("CDA stopping...")
 		
-		# TODO: implementation here
-		# self.sysPerfMgr.stopManager()
+		self.sysPerfMgr.stopManager()
 		self.dataMgr.stopManager()
 		
 		logging.info("CDA stopped with exit code %s.", str(code))
@@ -96,7 +99,7 @@ def main():
 		logging.info('Parsed configuration file arg: %s', configFile)
 	except:
 		logging.info('No arguments to parse.')
-		
+
 	# init ConfigUtil
 	configUtil = ConfigUtil(configFile)
 	cda = None
@@ -140,20 +143,6 @@ def main():
 	# unnecessary
 	logging.info('Exiting CDA.')
 	exit()
-
-	# cda = ConstrainedDeviceApp()
-	# cda.startApp()
-	
-	# runForever = ConfigUtil().getBoolean(ConfigConst.CONSTRAINED_DEVICE, ConfigConst.RUN_FOREVER_KEY)
-	
-	# if runForever:
-	# 	while (True):
-	# 		sleep(5)
-			
-	# else:
-	# 	# TODO: Make the '65' value configurable
-	# 	sleep(65)
-	# 	cda.stopApp(0)
 
 if __name__ == '__main__':
 	"""

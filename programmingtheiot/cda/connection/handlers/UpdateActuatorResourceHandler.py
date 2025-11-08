@@ -24,7 +24,8 @@ from programmingtheiot.data.DataUtil import DataUtil
 
 from programmingtheiot.data.ActuatorData import ActuatorData
 
-class UpdateActuatorResourceHandler(Resource):
+
+class UpdateActuatorResourceHandler():
 	"""
 	Standard resource that will handle an incoming actuation command,
 	and return the command response.
@@ -48,6 +49,8 @@ class UpdateActuatorResourceHandler(Resource):
 
 			response.payload = self._createResponse(response = response, data = actuatorCmdData)
 			response.max_age = self.pollCycles
+			
+			logging.info("UpdateActuatorResourceHandler::render_PUT_advanced - Actuator command processed.")
 
 		return self, response
 
@@ -68,6 +71,10 @@ class UpdateActuatorResourceHandler(Resource):
 
 		# return the JSON data
 		jsonData = self.dataUtil.actuatorDataToJson(actuatorResponseData)
+		
+		logging.info("Actuator Response Data JSON: " + jsonData)	
 
 		return (defines.Content_types["application/json"], jsonData)
+	
+	
 		
