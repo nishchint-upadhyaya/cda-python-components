@@ -56,7 +56,7 @@ class MqttClientConnectorTest(unittest.TestCase):
 	YOU MAY NEED TO ADJUST THE HOST/PORT IN programmingtheiot/common/Config.properties
 	KEEP ALIVE BY DEFAULT IS 60 SECONDS
 	'''
-	@unittest.skip("Ignore for now.")
+	# @unittest.skip("Ignore for now.")
 	def testConnectAndDisconnect(self):
 		delay = self.cfg.getInteger(ConfigConst.MQTT_GATEWAY_SERVICE, ConfigConst.KEEP_ALIVE_KEY, ConfigConst.DEFAULT_KEEP_ALIVE)
 		
@@ -67,7 +67,7 @@ class MqttClientConnectorTest(unittest.TestCase):
 		self.mcc.disconnectClient()
 
 	# UNCOMMMENT OUT OFR NOW!
-	@unittest.skip("Ignore for now.")
+	# @unittest.skip("Ignore for now.")
 	def testConnectAndCDAManagementStatusPubSub(self):
 		qos = 1
 		delay = self.cfg.getInteger(ConfigConst.MQTT_GATEWAY_SERVICE, ConfigConst.KEEP_ALIVE_KEY, ConfigConst.DEFAULT_KEEP_ALIVE)
@@ -86,7 +86,7 @@ class MqttClientConnectorTest(unittest.TestCase):
 		
 		self.mcc.disconnectClient()
 
-	#@unittest.skip("Ignore for now.")
+	# @unittest.skip("Ignore for now.")
 	def testNewActuatorCmdPubSub(self):
 		qos = 1
 	
@@ -107,7 +107,7 @@ class MqttClientConnectorTest(unittest.TestCase):
 		
 		self.mcc.disconnectClient()
 		
-	@unittest.skip("Ignore for now.")
+	# @unittest.skip("Ignore for now.")
 	def testActuatorCmdPubSub(self):
 		qos = 0
 		delay = self.cfg.getInteger(ConfigConst.MQTT_GATEWAY_SERVICE, ConfigConst.KEEP_ALIVE_KEY, ConfigConst.DEFAULT_KEEP_ALIVE)
@@ -129,7 +129,7 @@ class MqttClientConnectorTest(unittest.TestCase):
 		
 		self.mcc.disconnectClient()
 
-	@unittest.skip("Ignore for now.")
+	# @unittest.skip("Ignore for now.")
 	def testSensorMsgPub(self):
 		qos = 0
 		delay = self.cfg.getInteger(ConfigConst.MQTT_GATEWAY_SERVICE, ConfigConst.KEEP_ALIVE_KEY, ConfigConst.DEFAULT_KEEP_ALIVE)
@@ -151,7 +151,7 @@ class MqttClientConnectorTest(unittest.TestCase):
 		
 		self.mcc.disconnectClient()
 
-	@unittest.skip("Ignore for now.")
+	# @unittest.skip("Ignore for now.")
 	def testCDAManagementStatusSubscribe(self):
 		qos = 1
 		delay = self.cfg.getInteger(ConfigConst.MQTT_GATEWAY_SERVICE, ConfigConst.KEEP_ALIVE_KEY, ConfigConst.DEFAULT_KEEP_ALIVE)
@@ -163,7 +163,7 @@ class MqttClientConnectorTest(unittest.TestCase):
 		
 		self.mcc.disconnectClient()
 
-	@unittest.skip("Ignore for now.")
+	# @unittest.skip("Ignore for now.")
 	def testCDAActuatorCmdSubscribe(self):
 		qos = 1
 		delay = self.cfg.getInteger(ConfigConst.MQTT_GATEWAY_SERVICE, ConfigConst.KEEP_ALIVE_KEY, ConfigConst.DEFAULT_KEEP_ALIVE)
@@ -175,7 +175,7 @@ class MqttClientConnectorTest(unittest.TestCase):
 		
 		self.mcc.disconnectClient()
 
-	@unittest.skip("Ignore for now.")
+	# @unittest.skip("Ignore for now.")
 	def testCDAManagementStatusPublish(self):
 		"""
 		Uncomment this test when integration between the GDA and CDA using MQTT.
