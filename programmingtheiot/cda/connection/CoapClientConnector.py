@@ -30,35 +30,6 @@ from programmingtheiot.cda.connection.IRequestResponseClient import IRequestResp
 
 from programmingtheiot.data.DataUtil import DataUtil
 
-class HandleActuatorEvent():
-	def __init__(self, \
-			listener: IDataMessageListener = None, \
-			resource: ResourceNameEnum = ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE, \
-			requests = None):
-		
-		self.listener = listener
-		self.resource = resource
-		self.observeRequests = requests
-		
-		if not self.resource:
-			self.resource = ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE
-			
-	def handleActuatorResponse(self, response):
-		if response:
-			jsonData = response.payload
-			
-			if self.observeRequests is not None:
-				self.observeRequests[self.resource] = response
-			
-			logging.info(f"Received actuator command response to resource {self.resource} -> {jsonData}")
-			
-			if self.listener:
-				try:
-					data = DataUtil().jsonToActuatorData(jsonData = jsonData)
-					self.listener.handleActuatorCommandMessage(data = data)
-
-				except:
-					logging.warning(f"Failed to decode actuator data. Ignoring: {jsonData}")
 
 class CoapClientConnector(IRequestResponseClient):
 	"""
@@ -78,10 +49,8 @@ class CoapClientConnector(IRequestResponseClient):
 		self.port = self.config.getInteger(ConfigConst.COAP_GATEWAY_SERVICE, ConfigConst.PORT_KEY, ConfigConst.DEFAULT_COAP_PORT)
 				
 		self.includeDebugLogDetail = True
-		
 		self.uriPath = f"coap://{self.host}:{self.port}/"
-		logging.info(f"CoAP client will connect to: {self.uriPath}")
-
+		
 		try:
 			tmpHost = socket.gethostbyname(self.host)
 			
@@ -95,8 +64,8 @@ class CoapClientConnector(IRequestResponseClient):
 			logging.error(f"Failed to resolve host: {self.host}")
 			raise
 
-		# self.uriPath = f"coap://{self.host}:{self.port}/"
-		# logging.info(f"CoAP client will connect to: {self.uriPath}")
+		
+		logging.info(f"CoAP client will connect to: {self.uriPath}")
 	
 	def sendDiscoveryRequest(self, timeout: int = IRequestResponseClient.DEFAULT_TIMEOUT) -> bool:
 		logging.info("Discovering remote resources...")
@@ -239,17 +208,6 @@ class CoapClientConnector(IRequestResponseClient):
 					logging.warning(f"Failed to cancel observe for resource {resource}.")
 					traceback.print_exception(type(e), e, e.__traceback__)
 	
-	def _initClient(self):
-		try:
-			self.coapClient = HelperClient(server = (self.host, self.port))
-	
-			logging.info(f"Client created. Will invoke resources at {self.uriPath}")
-
-		except Exception as e:
-			# obviously, this is a critical failure - you may want to handle this differently
-			logging.error(f"Failed to create CoAP client to URI path {self.uriPath}")
-			traceback.print_exception(type(e), e, e.__traceback__)
-
 	def _createResourcePath(self, resource: ResourceNameEnum = None, name: str = None):
 		resourcePath = ""
 		hasResource = False
@@ -266,13 +224,24 @@ class CoapClientConnector(IRequestResponseClient):
 		
 		return resourcePath
 	
+	def _initClient(self):
+		try:
+			self.coapClient = HelperClient(server = (self.host, self.port))
+	
+			logging.info(f"Client created. Will invoke resources at {self.uriPath}")
+
+		except Exception as e:
+			# obviously, this is a critical failure - you may want to handle this differently
+			logging.error(f"Failed to create CoAP client to URI path {self.uriPath}")
+			traceback.print_exception(type(e), e, e.__traceback__)
+			
 	def _onDeleteResponse(self, response):
 		if not response:
 			logging.warning("DELETE response invalid. Ignoring.")
 			return
 		
 		logging.info(f"DELETE response received: {response.payload}")
-
+	
 	def _onDiscoveryResponse(self, response):
 		if not response:
 			logging.warning("DISCOVERY response invalid. Ignoring.")
@@ -324,3 +293,34 @@ class CoapClientConnector(IRequestResponseClient):
 			return
 		
 		logging.info(f"PUT response received: {response.payload}")
+		
+class HandleActuatorEvent():
+	def __init__(self, \
+		listener: IDataMessageListener = None, \
+		resource: ResourceNameEnum = ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE, \
+		requests = None):
+	
+		self.listener = listener
+		self.resource = resource
+		self.observeRequests = requests
+		
+		if not self.resource:
+			self.resource = ResourceNameEnum.CDA_ACTUATOR_CMD_RESOURCE
+		
+	def handleActuatorResponse(self, response):
+		if response:
+			jsonData = response.payload
+			
+			if self.observeRequests is not None:
+				self.observeRequests[self.resource] = response
+			
+			logging.info(f"Received actuator command response to resource {self.resource} -> {jsonData}")
+			
+			if self.listener:
+				try:
+					data = DataUtil().jsonToActuatorData(jsonData = jsonData)
+					self.listener.handleActuatorCommandMessage(data = data)
+
+				except:
+					logging.warning(f"Failed to decode actuator data. Ignoring: {jsonData}")
+

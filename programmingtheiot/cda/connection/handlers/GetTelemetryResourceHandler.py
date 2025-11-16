@@ -12,12 +12,13 @@
 
 import logging
 
+import programmingtheiot.common.ConfigConst as ConfigConst
+
 from coapthon import defines
 from coapthon.resources.resource import Resource
 
-import programmingtheiot.common.ConfigConst as ConfigConst
-
 from programmingtheiot.common.ConfigUtil import ConfigUtil
+
 from programmingtheiot.common.IDataMessageListener import IDataMessageListener
 from programmingtheiot.common.ITelemetryDataListener import ITelemetryDataListener
 
@@ -26,8 +27,8 @@ from programmingtheiot.data.SensorData import SensorData
 
 class GetTelemetryResourceHandler(Resource, ITelemetryDataListener):
 	"""
-	Observable resource that will collect sensor data based on the
-	given name from the data message listener implementation.
+	Observable resource that will collect telemetry based on the given
+	name from the data message listener implementation.
 	
 	NOTE: Your implementation will likely need to extend from the selected
 	CoAP library's observable resource base class.
@@ -78,4 +79,6 @@ class GetTelemetryResourceHandler(Resource, ITelemetryDataListener):
 	
 	def onSensorDataUpdate(self, data: SensorData) -> bool:
 		self.sensorData = data
+		
+		
 	

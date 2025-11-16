@@ -29,6 +29,7 @@ from programmingtheiot.cda.connection.handlers.GetTelemetryResourceHandler impor
 from programmingtheiot.cda.connection.handlers.UpdateActuatorResourceHandler import UpdateActuatorResourceHandler
 from programmingtheiot.cda.connection.handlers.GetSystemPerformanceResourceHandler import GetSystemPerformanceResourceHandler
 
+
 class CoapServerAdapter():
 	"""
 	Definition for a CoAP communications server, with embedded test functions.
@@ -52,6 +53,7 @@ class CoapServerAdapter():
 		self._initServer()
 		
 		logging.info(f"CoAP server configured for host and port: {self.serverUri}")
+
 		
 	def addResource(self, resourcePath: ResourceNameEnum = None, endName: str = None, resource = None):
 		if resourcePath and resource:
@@ -100,7 +102,7 @@ class CoapServerAdapter():
 			logging.info("\n\n***** CoAP server started. *****\n\n")
 		else:
 			logging.warning("CoAP server not yet initialized (shouldn't happen).")
-	
+
 	def stopServer(self):
 		if self.coapServer:
 			logging.info("Stopping CoAP server...")
@@ -109,6 +111,14 @@ class CoapServerAdapter():
 			self.coapServerTask.join(5)
 		else:
 			logging.warning("CoAP server not yet initialized (shouldn't happen).")
+	
+	def _runServer(self):
+		try:
+			self.coapServer.listen(self.listenTimeout)
+	
+		except Exception as e:
+			traceback.print_exception(type(e), e, e.__traceback__)
+			logging.warning("Failed to run server.")
 	
 	def setDataMessageListener(self, listener: IDataMessageListener = None) -> bool:
 		if listener:
@@ -143,11 +153,4 @@ class CoapServerAdapter():
 		except Exception as e:
 			traceback.print_exception(type(e), e, e.__traceback__)
 			logging.warning("Failed to create CoAP server.")
-			
-	def _runServer(self):
-		try:
-			self.coapServer.listen(self.listenTimeout)
-
-		except Exception as e:
-			traceback.print_exception(type(e), e, e.__traceback__)
-			logging.warning("Failed to run server.")
+		

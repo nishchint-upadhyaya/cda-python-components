@@ -22,16 +22,8 @@ class SensorData(BaseIotData):
 		
 	def __init__(self, typeID: int = ConfigConst.DEFAULT_SENSOR_TYPE, name = ConfigConst.NOT_SET, d = None):
 		super(SensorData, self).__init__(name = name, typeID = typeID, d = d)
-		
-		self.value = ConfigConst.DEFAULT_VAL
 	
-	def getSensorType(self) -> int:
-		"""
-		Returns the sensor type to the caller.
-		
-		@return int
-		"""
-		return self.sensorType
+		self.value = ConfigConst.DEFAULT_VAL
 	
 	def getValue(self) -> float:
 		return self.value
@@ -39,10 +31,11 @@ class SensorData(BaseIotData):
 	def setValue(self, newVal: float):
 		self.value = newVal
 		self.updateTimeStamp()
-			
+		
 	def _handleUpdateData(self, data):
 		if data and isinstance(data, SensorData):
 			self.value = data.getValue()
+	
 	
 	def __str__(self):
 		"""
@@ -50,6 +43,7 @@ class SensorData(BaseIotData):
 		
 		@return The string representing this instance, returned in CSV 'key=value' format.
 		"""
+		
 		return '{}={},{}={},{}={},{}={},{}={},{}={},{}={},{}={},{}={},{}={}'.format(
 			ConfigConst.NAME_PROP, self.name,
 			ConfigConst.TYPE_ID_PROP, self.typeID,
@@ -61,3 +55,6 @@ class SensorData(BaseIotData):
 			ConfigConst.LATITUDE_PROP, self.latitude,
 			ConfigConst.LONGITUDE_PROP, self.longitude,
 			ConfigConst.VALUE_PROP, self.value)
+			
+			
+			

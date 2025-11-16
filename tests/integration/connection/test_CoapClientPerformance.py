@@ -59,20 +59,14 @@ class CoapClientPerformanceTest(unittest.TestCase):
 		
 		self._execTestGet(self.MAX_TEST_RUNS, False)
 
-	@unittest.skip("Ignore for now.")
+	#@unittest.skip("Ignore for now.")
 	def testPostRequestCon(self):
-		"""
-		Comment the annotation to perf test CON POST
-		"""
 		print("Testing POST - CON")
 		
 		self._execTestPost(self.MAX_TEST_RUNS, True)
 
-	@unittest.skip("Ignore for now.")
+	#@unittest.skip("Ignore for now.")
 	def testPostRequestNon(self):
-		"""
-		Comment the annotation to perf test NON POST
-		"""
 		print("Testing POST - NON")
 		
 		self._execTestPost(self.MAX_TEST_RUNS, False)
@@ -120,9 +114,7 @@ class CoapClientPerformanceTest(unittest.TestCase):
 		endTime = time.time_ns()
 		elapsedMillis = (endTime - startTime) / self.NS_IN_MILLIS
 		
-		print("\nPOST message - useCON = " + str(useCon) + " [" + str(maxTestRuns) + "]: " + str(elapsedMillis) + " ms. Payload Len: " + str(len(payload)))
-		
-		sleep(2)
+		print("POST message - useCON = " + str(useCon) + " [" + str(maxTestRuns) + "]: " + str(elapsedMillis) + " ms")
 		
 	def _execTestPut(self, maxTestRuns: int, useCon: bool):
 		sensorData = SensorData()

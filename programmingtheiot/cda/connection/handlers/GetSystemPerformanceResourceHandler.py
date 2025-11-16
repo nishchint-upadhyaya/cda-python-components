@@ -18,12 +18,11 @@ from coapthon.resources.resource import Resource
 import programmingtheiot.common.ConfigConst as ConfigConst
 
 from programmingtheiot.common.ConfigUtil import ConfigUtil
-from programmingtheiot.common.ITelemetryDataListener import ITelemetryDataListener
+
+from programmingtheiot.common.ISystemPerformanceDataListener import ISystemPerformanceDataListener
 from programmingtheiot.common.IDataMessageListener import IDataMessageListener
-from programmingtheiot.common.ISystemPerformanceDataListener import ISystemPerformanceDataListener 
 
 from programmingtheiot.data.DataUtil import DataUtil
-
 from programmingtheiot.data.SystemPerformanceData import SystemPerformanceData
 
 class GetSystemPerformanceResourceHandler(Resource, ISystemPerformanceDataListener):
@@ -35,8 +34,8 @@ class GetSystemPerformanceResourceHandler(Resource, ISystemPerformanceDataListen
 	CoAP library's observable resource base class.
 	
 	"""
-
 	def __init__(self, name: str = ConfigConst.SYSTEM_PERF_MSG, coap_server = None, dataMsgListener: IDataMessageListener = None):
+		
 		super(GetSystemPerformanceResourceHandler, self).__init__( \
 			name, coap_server, visible = True, observable = True, allow_children = True)
 
@@ -57,6 +56,7 @@ class GetSystemPerformanceResourceHandler(Resource, ISystemPerformanceDataListen
 		
 		# for testing
 		self.payload = "GetSysPerfData"
+	
 		
 	def render_GET_advanced(self, request, response):
 		if request:
@@ -80,4 +80,3 @@ class GetSystemPerformanceResourceHandler(Resource, ISystemPerformanceDataListen
 	
 	def onSystemPerformanceDataUpdate(self, data: SystemPerformanceData) -> bool:
 		self.sysPerfData = data
-	
